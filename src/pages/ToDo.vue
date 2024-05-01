@@ -1,5 +1,19 @@
 <template>
   <q-page>
+    <div class="row q-pa-md">
+      <q-input
+        @keyup.enter="addTask"
+        filled
+        class="col"
+        v-model="newTaskText"
+        placeholder="Enter new task"
+        dense
+      >
+        <template v-slot:append>
+          <q-btn round dense flat icon="add" @click="addTask"></q-btn>
+        </template>
+      </q-input>
+    </div>
     <q-list separator bordered>
       <q-item
         @click="markDone(task)"
@@ -30,7 +44,15 @@
 
 <script setup>
 import { ref } from "vue";
+import { useQuasar } from "quasar";
 
+//Prepare dependencies
+const $q = useQuasar();
+
+//New task text
+const newTaskText = ref("");
+
+//Tasks array
 const tasks = ref([
   {
     title: "Todo 1",
@@ -42,12 +64,29 @@ const tasks = ref([
   },
 ]);
 
+//Tasks CRUD handlers
+const addTask = () => {
+  tasks.value.unshift({
+    title: newTaskText.value,
+    done: false,
+  });
+  newTaskText.value = "";
+};
+
 const markDone = (task) => {
   task.done = !task.done;
 };
 
 const deleteTask = (index) => {
-  tasks.value.splice(index, 1);
+  $q.dialog({
+    title: "Confirm",
+    message: "Are you sure you want to delete task?",
+    cancel: true,
+    persistent: true,
+  }).onOk(() => {
+    tasks.value.splice(index, 1);
+    $q.notify("Task deleted");
+  });
 };
 </script>
 
