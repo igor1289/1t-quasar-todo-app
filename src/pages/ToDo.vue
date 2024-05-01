@@ -39,6 +39,10 @@
         </q-item-section>
       </q-item>
     </q-list>
+    <div v-if="!tasks.length" class="no-task absolute-center">
+      <q-icon name="check" size="128px" color="primary" />
+      <div class="text-h4 text-primary text-center">No Tasks</div>
+    </div>
   </q-page>
 </template>
 
@@ -66,11 +70,13 @@ const tasks = ref([
 
 //Tasks CRUD handlers
 const addTask = () => {
-  tasks.value.unshift({
-    title: newTaskText.value,
-    done: false,
-  });
-  newTaskText.value = "";
+  if (newTaskText.value) {
+    tasks.value.unshift({
+      title: newTaskText.value,
+      done: false,
+    });
+    newTaskText.value = "";
+  }
 };
 
 const markDone = (task) => {
@@ -98,5 +104,9 @@ const deleteTask = (index) => {
   q-item-label {
     text-decoration: line-through;
   }
+}
+
+.no-task {
+  opacity: 50%;
 }
 </style>
